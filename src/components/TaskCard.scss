@@ -1,0 +1,233 @@
+@import '../styles/variables';
+@import '../styles/mixins';
+
+// Base Task Card Styles
+.task_card {
+  width: 100%;
+  min-height: 100px;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+  background: white;
+  box-shadow: $shadow-light;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-hover;
+  }
+
+  &.dragging {
+    opacity: 0.5;
+  }
+}
+
+// Task Content
+.task_text {
+  font-size: 16px;
+  margin: 0;
+  word-break: break-word;
+}
+
+// Bottom Section
+.task_card_bottom_line {
+  @include flex-space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+// Tags
+.task_card_tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: white;
+}
+
+// Actions
+.task_actions {
+  display: flex;
+  gap: 8px;
+}
+
+.icon_btn {
+  background: none;
+  border: none;
+  padding: 6px;
+  border-radius: 6px;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+
+  svg {
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+
+  &:hover {
+    transform: scale(1.1);
+
+    svg {
+      transform: rotate(-5deg);
+    }
+  }
+}
+
+.edit_icon {
+  color: $edit-color;
+
+  &:hover {
+    background: rgba($edit-color, 0.1);
+  }
+}
+
+.delete_icon {
+  color: $delete-color;
+
+  &:hover {
+    background: rgba($delete-color, 0.1);
+  }
+}
+
+.task_actions .icon {
+  margin-right: 6px;
+  font-size: 15px;
+  vertical-align: middle;
+}
+
+.edit_btn {
+  background: $edit-color;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.delete_btn {
+  background: $delete-color;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+// Checkbox
+.task-checkbox {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  border: 2px solid $primary-color;
+  border-radius: 4px;
+  margin-right: 10px;
+  cursor: pointer;
+  position: relative;
+  background-color: white;
+  display: inline-block;
+  vertical-align: middle;
+  transition: all 0.2s ease;
+
+  &:checked {
+    background-color: $primary-color;
+    border-color: $primary-color;
+
+    &::after {
+      content: "✓";
+      position: absolute;
+      color: white;
+      font-size: 12px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  &:hover {
+    border-color: lighten($primary-color, 10%);
+  }
+}
+
+.task_main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+// Priority Badge
+.priority-badge {
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  text-align: center;
+  transition: all 0.2s ease;
+
+  &[data-priority="high"] {
+    color: #ff4d4f;
+    background: rgba(255, 77, 79, 0.1);
+    border-color: #ff4d4f;
+  }
+
+  &[data-priority="medium"] {
+    color: #faad14;
+    background: rgba(250, 173, 20, 0.1);
+    border-color: #faad14;
+  }
+
+  &[data-priority="low"] {
+    color: #52c41a;
+    background: rgba(82, 196, 26, 0.1);
+    border-color: #52c41a;
+  }
+}
+
+.task_content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.task_title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.task_description {
+  font-size: 14px;
+  color: #888;
+  font-style: italic;
+  margin: 0;
+  line-height: 1.4;
+  padding-left: 10px;
+  border-left: 2px solid #eee;
+}
+
+// Responsive
+@media (max-width: 576px) {
+  .task_card {
+    padding: 12px;
+  }
+
+  .task_card_bottom_line {
+    flex-direction: column;
+  }
+
+  .task_actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

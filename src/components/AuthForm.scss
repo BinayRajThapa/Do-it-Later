@@ -1,0 +1,155 @@
+@import '../styles/variables';
+@import '../styles/mixins';
+
+.auth-container {
+  @include flex-center;
+  min-height: 100vh;
+  background-color: $light-gray;
+  padding: 20px;
+}
+
+.auth-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: $card-shadow;
+  padding: 30px;
+  width: 100%;
+  max-width: 400px;
+  @include transition-all;
+
+  h2 {
+    color: $primary-color;
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 1.8rem;
+  }
+}
+
+.form-group {
+  margin-bottom: 20px;
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: $text-color;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid $border-color;
+    border-radius: 8px;
+    font-size: 16px;
+    @include transition-all;
+
+    &:focus {
+      @include input-focus;
+    }
+
+    &.error {
+      border-color: $danger-color;
+    }
+  }
+}
+
+.error-message {
+  color: $danger-color;
+  font-size: 14px;
+  margin-top: 5px;
+  display: block;
+}
+
+.auth-button {
+  @include flex-center;
+  width: 100%;
+  padding: 14px;
+  background: $primary-color;
+  color: white !important;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+  height: 48px;
+  @include transition-all;
+
+  &:hover:not(:disabled) {
+    background: $primary-hover;
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+.auth-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 20px;
+  color: #666;
+
+  p {
+    margin: 10px 0;
+
+    span {
+      color: $primary-color;
+      cursor: pointer;
+      font-weight: 500;
+      text-decoration: underline;
+    }
+  }
+
+  .forgot-password {
+    color: $primary-color;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 15px;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.auth-error-message {
+  color: $danger-color;
+  background: rgba($danger-color, 0.15);
+  padding: 10px;
+  border-radius: 4px;
+  margin: 15px 0;
+  border-left: 3px solid $danger-color;
+  display: block;
+  opacity: 1;
+  @include transition-all;
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 20px;
+
+    h2 {
+      font-size: 1.5rem;
+    }
+  }
+
+  .form-group input {
+    padding: 10px 12px;
+  }
+
+  .auth-button {
+    padding: 12px;
+  }
+}

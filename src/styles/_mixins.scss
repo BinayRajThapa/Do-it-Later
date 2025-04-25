@@ -1,0 +1,67 @@
+
+// Center using flex
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin flex-space-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@mixin flex-space-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+// Input focus glow effect
+@mixin input-focus {
+  border-color: $primary-color;
+  box-shadow: 0 0 0 3px rgba($primary-color, 0.2);
+  outline: none;
+}
+
+// Transition mixin (default to all)
+@mixin transition-all {
+  transition: all 0.3s ease;
+}
+
+// Custom scrollbar style
+@mixin custom-scrollbar($thumb-color: var(--primary-color)) {
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $thumb-color;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--bg-color);
+  }
+}
+
+// Responsive container max-width
+@mixin container($max-width: 1400px) {
+  max-width: $max-width;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+// icon hover 
+@mixin icon-hover {
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: scale(1.1);
+
+    svg {
+      transform: rotate(-5deg);
+    }
+  }
+}

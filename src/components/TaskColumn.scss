@@ -1,0 +1,91 @@
+@import '../styles/variables';
+@import '../styles/mixins';
+
+.task_column {
+  background: $column-bg;
+  border-radius: 10px;
+  padding: 15px;
+
+  // Header Wrapper
+  .task_column_header {
+    @include flex-space-between;
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    color: white;
+    background: $primary-color;
+
+    h2 {
+      font-size: $font-base;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .select-all-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid white;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: $font-sm;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: white;
+        color: $primary-color;
+      }
+    }
+
+    &[data-status="doing"] {
+      background: $column-doing-color;
+
+      .select-all-btn:hover {
+        color: $column-doing-color;
+      }
+    }
+
+    &[data-status="done"] {
+      background: $column-done-color;
+
+      .select-all-btn:hover {
+        color: $column-done-color;
+      }
+    }
+  }
+
+  // Old Fallback Header Colors (keep for safety)
+  &[data-status="doing"] {
+    .task_column_heading {
+      background: $column-doing-color;
+    }
+  }
+
+  &[data-status="done"] {
+    .task_column_heading {
+      background: $column-done-color;
+    }
+  }
+}
+
+// Fallback Support
+.column-header {
+  @include flex-space-between;
+}
+
+// Fallback Select Button
+.select-all-btn {
+  background: transparent;
+  border: 1px solid $select-all-border;
+  color: $select-all-border;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: $font-sm;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: $select-all-border;
+    color: white;
+  }
+}

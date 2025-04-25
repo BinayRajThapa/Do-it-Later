@@ -1,0 +1,52 @@
+@import './variables';
+@import './mixins';
+
+
+// 2. Global Reset (basic cleanup)
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+// 3. Body Base Styling
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  line-height: 1.6;
+  min-height: 100vh;
+  scroll-behavior: smooth;
+}
+
+// 4. Global Typography
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+// 5. Button Reset
+button {
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+// 6. Inputs
+input, textarea {
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+}
+
+// image 
+img {
+  max-width: 100%;
+  height: auto;
+}
+
