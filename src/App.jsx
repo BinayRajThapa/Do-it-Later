@@ -5,9 +5,8 @@ import { login, logout } from './store/authSlice';
 import { updateTasks, deleteTask } from './store/tasksSlice';
 import TaskForm from "./components/TaskForm";
 import TaskColumn from "./components/TaskColumn";
-import DeleteModal from "./components/DeleteModal";
-import EditModal from './components/EditModal';
 import AuthForm from "./components/AuthForm";
+import Modals from './components/Modals';  
 import UserDropdown from "./components/UserDropdown";
 import { authService } from "./utils/auth";
 import "./App.scss";
@@ -22,7 +21,7 @@ const App = () => {
   const { isAuthenticated } = useSelector(state => state.auth);
   
   const [activeCard, setActiveCard] = useState(null);
-  
+
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showEditConfirm, setShowEditConfirm] = useState(false);
   const [editedTask, setEditedTask] = useState({ title: "", description: "", priority: "medium" });
@@ -34,6 +33,7 @@ const App = () => {
   const [selectedTasks, setSelectedTasks] = useState([]);
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
 
+  const [showNewTaskModal, setShowNewTaskModal] = useState(false); // New task modal control
 
   const toggleTaskSelection = (taskId) => {
     setSelectedTasks(prev =>
@@ -45,13 +45,12 @@ const App = () => {
 
   const fireConfetti = () => {
     confetti({
-      particleCount: 150,
-      spread: 70,
+      particleCount: 1500,
+      spread: 1000,
       origin: { y: 0.6 },
       colors: ['#6457f9', '#7c4dff', '#4a6baf', '#e6a23c', '#67c23a']
     });
   };
-
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -136,8 +135,6 @@ const App = () => {
     setShowDeleteConfirm(true);
   }, [tasks]);
   
-  
-
   const confirmDelete = () => {
     dispatch(deleteTask(taskToDelete));
     setShowDeleteConfirm(false);
@@ -154,14 +151,12 @@ const App = () => {
   const handleEditClick = useCallback((id) => {
     const taskIndex = tasks.findIndex(task => task.id === id);
     if (taskIndex === -1) return toast.error("Task not found!");
-  
+
     setTaskToEdit(taskIndex);
     setOriginalText(tasks[taskIndex].task);
     setEditedText(tasks[taskIndex].task);
     setShowEditConfirm(true);
   }, [tasks]);
-  
-  
 
   const confirmEdit = () => {
     const updatedTasks = [...tasks];
@@ -173,32 +168,29 @@ const App = () => {
     setShowEditConfirm(false);
     toast.success("Task updated!");
   };
-  
 
   const handleSelectAll = (status) => {
     const columnTasks = tasks.filter(task => task.status === status);
     const allSelected = columnTasks.every(task => selectedTasks.includes(task.id));
-  
+
     setSelectedTasks(prev =>
       allSelected
         ? prev.filter(id => !columnTasks.some(task => task.id === id))
         : [...new Set([...prev, ...columnTasks.map(task => task.id)])]
     );
-  
+
     const statusName = {
       todo: "To Do",
       doing: "In Progress",
       done: "Completed"
     };
-  
+
     toast.success(
       allSelected 
         ? `Unselected all from "${statusName[status]}"`
         : `Selected all from "${statusName[status]}"`
     );
   };
-  
-  
 
   // Drag-and-drop handler
   const onDrop = (newStatus, position) => {
@@ -215,24 +207,32 @@ const App = () => {
       ...movedTask,
       status: newStatus 
     });
-  
+
     dispatch(updateTasks(updatedTasks));
     setActiveCard(null);
 
-  
     if (newStatus === 'done') {
       fireConfetti();
     }
-  
+
     const statusName = {
       todo: "To Do",
       doing: "In Progress",
       done: "Completed"
     };
-  
+
     toast.success(`Task moved to "${statusName[newStatus]}"`);
   };
-  
+
+  const handleAddNewTask = async (newTaskData) => {
+    const updatedTasks = [...tasks, {
+      id: Date.now(),
+      ...newTaskData,
+      status: 'todo'
+    }];
+    dispatch(updateTasks(updatedTasks));
+    toast.success("New task added!");
+  };
 
   return (
     <div className="app">
@@ -264,7 +264,6 @@ const App = () => {
           )
         }/>
 
-        
         <Route path="/" element={
           isAuthenticated ? (
             <>
@@ -272,88 +271,72 @@ const App = () => {
                 <UserDropdown />
               </div>
 
-              <TaskForm />
-                          
+              <TaskForm onNewTask={() => setShowNewTaskModal(true)} />
+
               <main className="app_main">
                 <div className="columns_container">
-                  <TaskColumn
-                    title="To Do Tasks"
-                    tasks={tasks}
-                    status="todo"
-                    setActiveCard={setActiveCard}
-                    onDrop={onDrop}
-                    onDelete={handleDeleteClick}
-                    onEdit={handleEditClick}
-                    selectedTasks={selectedTasks}
-                    onSelectAll={handleSelectAll}
-                    onToggleSelect={toggleTaskSelection}
-                  />
-                  <TaskColumn
-                    title="In Progress Tasks"
-                    tasks={tasks}
-                    status="doing"
-                    setActiveCard={setActiveCard}
-                    onDrop={onDrop}
-                    onDelete={handleDeleteClick}
-                    onEdit={handleEditClick}
-                    selectedTasks={selectedTasks}
-                    onSelectAll={handleSelectAll}
-                    onToggleSelect={toggleTaskSelection}
-                  />
-                  <TaskColumn
-                    title="Completed Tasks"
-                    tasks={tasks}
-                    status="done"
-                    setActiveCard={setActiveCard}
-                    onDrop={onDrop}
-                    onDelete={handleDeleteClick}
-                    onEdit={handleEditClick}
-                    selectedTasks={selectedTasks}
-                    onSelectAll={handleSelectAll}
-                    onToggleSelect={toggleTaskSelection}
-                  />
+                  {['todo', 'doing', 'done'].map((status) => (
+                    <TaskColumn
+                      key={status}
+                      title={`${status === 'todo' ? 'To Do' : status === 'doing' ? 'In Progress' : 'Completed'} Tasks`}
+                      tasks={tasks}
+                      status={status}
+                      setActiveCard={setActiveCard}
+                      onDrop={onDrop}
+                      onDelete={handleDeleteClick}
+                      onEdit={handleEditClick}
+                      selectedTasks={selectedTasks}
+                      onSelectAll={handleSelectAll}
+                      onToggleSelect={toggleTaskSelection}
+                    />
+                  ))}
                 </div>
-              
               </main>
 
-              {/* Delete Confirmation Modal */}
-
-              <DeleteModal
-                show={showBulkDeleteConfirm}
-                onHide={() => setShowBulkDeleteConfirm(false)}
-                onConfirm={() => {
-                  deleteSelectedTasks();
-                  setShowBulkDeleteConfirm(false);
-                }}
-                customText={`Are you sure you want to delete ${selectedTasks.length} selected task(s)? This action cannot be undone.`}
-                customTitle="Delete Selected Tasks"
+              {/* Modals */}
+              <Modals
+                type="delete"
+                show={showDeleteConfirm}
+                onClose={() => setShowDeleteConfirm(false)}
+                onConfirm={confirmDelete}
               />
-              {selectedTasks.length > 0 && (
-                <div className="floating-delete-container">
-                  <button
-                    className="floating-delete-btn"
-                    onClick={() => {
-                      if (selectedTasks.length === 0) {
-                        toast.error("No tasks selected");
-                        return;
-                      }
-                      setShowBulkDeleteConfirm(true);
-                    }}
-                  >
-                    Delete Selected ({selectedTasks.length})
-                  </button>
-                </div>
-              )}
-
-              {/* Edit Confirmation Modal */}
-              <EditModal
+              <Modals
+                type="edit"
                 show={showEditConfirm}
-                onHide={() => setShowEditConfirm(false)}
+                onClose={() => setShowEditConfirm(false)}
                 onConfirm={confirmEdit}
                 taskIndex={taskToEdit}
                 editedTask={editedTask}
                 setEditedTask={setEditedTask}
               />
+              <Modals
+                type="new"
+                show={showNewTaskModal}
+                onClose={() => setShowNewTaskModal(false)}
+                onSubmitNewTask={handleAddNewTask}
+              />
+
+              {selectedTasks.length > 0 && (
+                <>
+                  <Modals
+                    type="delete"
+                    show={showBulkDeleteConfirm}
+                    onClose={() => setShowBulkDeleteConfirm(false)}
+                    onConfirm={() => {
+                      deleteSelectedTasks();
+                      setShowBulkDeleteConfirm(false);
+                    }}
+                  />
+                  <div className="floating-delete-container">
+                    <button
+                      className="floating-delete-btn"
+                      onClick={() => setShowBulkDeleteConfirm(true)}
+                    >
+                      Delete Selected ({selectedTasks.length})
+                    </button>
+                  </div>
+                </>
+              )}
 
             </>
           ) : (

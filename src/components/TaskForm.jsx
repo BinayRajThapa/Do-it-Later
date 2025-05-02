@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux'; 
 import { addTask } from '../store/tasksSlice';
-import NewTaskModal from './NewTaskModal';
+import Modals from './Modals'; 
 import './TaskForm.scss';
-
+import toast from 'react-hot-toast'; 
 
 const TaskForm = () => {
   const dispatch = useDispatch();
@@ -16,7 +16,7 @@ const TaskForm = () => {
       toast.error('Task title is required');
       return;
     }
-  
+
     dispatch(addTask({
       title: taskData.title.trim(),
       description: taskData.description?.trim() || '',
@@ -25,15 +25,15 @@ const TaskForm = () => {
       tags: [],
       owner: user.email
     }));
+    setShowModal(false); 
   };
-
 
   return (
     <header className="app_header">
       <div className="todo_header">
         <h1>Do it Later 😉</h1>
       </div>
-      
+
       <button 
         className="add-task-btn"
         onClick={() => setShowModal(true)}
@@ -42,13 +42,14 @@ const TaskForm = () => {
         + Add New Task
       </button>
 
-      <NewTaskModal 
+      <Modals 
+        type="new"
         show={showModal}
         onClose={() => {
           console.log('Closing Modal');
           setShowModal(false);
         }}
-        onSubmit={handleSubmit}
+        onSubmitNewTask={handleSubmit}
       />
     </header>
   );

@@ -3,11 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/authSlice';
 import './UserDropdown.scss';
 import toast from 'react-hot-toast';
-import LogoutModal from './LogoutModal'; 
+import Modals from './Modals'; 
 
 const UserDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false); 
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const { user } = useSelector(state => state.auth);
   const dispatch = useDispatch();
@@ -66,9 +66,10 @@ const UserDropdown = () => {
         </div>
       )}
 
-      <LogoutModal
+      <Modals
+        type="logout"
         show={showLogoutConfirm}
-        onHide={() => setShowLogoutConfirm(false)}
+        onClose={() => setShowLogoutConfirm(false)}
         onConfirm={handleLogout}
       />
     </div>
