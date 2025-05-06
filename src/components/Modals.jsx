@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './Modals.scss'; 
+import './Modals.scss';
 import { useSelector } from 'react-redux';
 
 const Modal = ({
@@ -14,6 +14,7 @@ const Modal = ({
 }) => {
     const tasks = useSelector((state) => state.tasks);
     const task = taskIndex !== undefined ? tasks[taskIndex] : null;
+
     const [newTitle, setNewTitle] = useState('');
     const [newDescription, setNewDescription] = useState('');
     const [newPriority, setNewPriority] = useState('medium');
@@ -90,22 +91,62 @@ const Modal = ({
         }
     }, [newTitle, newDescription, newPriority, onSubmitNewTask, onClose]);
 
-    const renderHeader = () => {
-        if (type === 'delete') return 'Confirm Deletion';
-        if (type === 'edit') return 'Edit Task';
-        if (type === 'logout') return 'Confirm Logout';
-        if (type === 'new') return 'Add New Task';
-    };
-
-    const renderBody = () => {
-        if (type === 'delete') {
-            return <p>Are you sure you want to delete the selected tasks?</p>;
-        }
-        if (type === 'logout') {
-            return <p>Are you sure you want to log out?</p>;
-        }
-        if (type === 'edit') {
-            return (
+    const modalConfig = {
+        new: {
+            header: 'Add New Task',
+            body: () => (
+                <form onSubmit={handleNewSubmit}>
+                    {errorMessage && <p className="error-message">{errorMessage}</p>}
+                    <div className="form-group">
+                        <label>Title*</label>
+                        <input
+                            type="text"
+                            value={newTitle}
+                            onChange={(e) => setNewTitle(e.target.value)}
+                            required
+                            placeholder="Task title..."
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Description</label>
+                        <textarea
+                            value={newDescription}
+                            onChange={(e) => setNewDescription(e.target.value)}
+                            placeholder="Task details..."
+                            rows="3"
+                        />
+                    </div>
+                    <div className="form-group priority-group">
+                        <label>Priority</label>
+                        <div className="priority-options">
+                            {['high', 'medium', 'low'].map((level) => (
+                                <button
+                                    key={level}
+                                    type="button"
+                                    className={`priority-btn ${newPriority === level ? 'active' : ''}`}
+                                    data-priority={level}
+                                    onClick={() => handlePriorityChange(level)}
+                                >
+                                    {level.charAt(0).toUpperCase() + level.slice(1)}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="button-group">
+                        <button
+                            type="submit"
+                            className="submit-btn"
+                            disabled={!newTitle.trim() || isSubmitting}
+                        >
+                            {isSubmitting ? 'Adding...' : 'Add Task'}
+                        </button>
+                    </div>
+                </form>
+            ),
+        },
+        edit: {
+            header: 'Edit Task',
+            body: () => (
                 <>
                     <div className="form-group">
                         <label>Title</label>
@@ -118,7 +159,6 @@ const Modal = ({
                             placeholder="Task title..."
                         />
                     </div>
-
                     <div className="form-group">
                         <label>Description</label>
                         <textarea
@@ -129,7 +169,6 @@ const Modal = ({
                             rows="3"
                         />
                     </div>
-
                     <div className="form-group priority-group">
                         <label>Priority</label>
                         <div className="priority-options">
@@ -147,71 +186,10 @@ const Modal = ({
                         </div>
                     </div>
                 </>
-            );
-        }
-        if (type === 'new') {
-            return (
-                <form onSubmit={handleNewSubmit}>
-                    {errorMessage && <p className="error-message">{errorMessage}</p>}
-                    <div className="form-group">
-                        <label>Title*</label>
-                        <input
-                            type="text"
-                            value={newTitle}
-                            onChange={(e) => setNewTitle(e.target.value)}
-                            required
-                            placeholder="Task title..."
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label>Description</label>
-                        <textarea
-                            value={newDescription}
-                            onChange={(e) => setNewDescription(e.target.value)}
-                            placeholder="Task details..."
-                            rows="3"
-                        />
-                    </div>
-
-                    <div className="form-group priority-group">
-                        <label>Priority</label>
-                        <div className="priority-options">
-                            {['high', 'medium', 'low'].map((level) => (
-                                <button
-                                    key={level}
-                                    type="button"
-                                    className={`priority-btn ${newPriority === level ? 'active' : ''}`}
-                                    data-priority={level}
-                                    onClick={() => handlePriorityChange(level)}
-                                >
-                                    {level.charAt(0).toUpperCase() + level.slice(1)}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="button-group">
-                        <button
-                            type="submit"
-                            className="submit-btn"
-                            disabled={!newTitle.trim() || isSubmitting}
-                        >
-                            {isSubmitting ? 'Adding...' : 'Add Task'}
-                        </button>
-                    </div>
-                </form>
-            );
-        }
-    };
-
-    const renderFooter = () => {
-        if (type === 'edit') {
-            return (
+            ),
+            footer: () => (
                 <>
-                    <button className="modal-btn btn-secondary" onClick={onClose}>
-                        Cancel
-                    </button>
+                    <button className="modal-btn btn-secondary" onClick={onClose}>Cancel</button>
                     <button
                         className="modal-btn btn-primary"
                         onClick={onConfirm}
@@ -220,55 +198,48 @@ const Modal = ({
                         Save Changes
                     </button>
                 </>
-            );
-        }
-        if (type === 'delete') {
-            return (
+            ),
+        },
+        delete: {
+            header: 'Confirm Deletion',
+            body: () => <p>Are you sure you want to delete the selected tasks?</p>,
+            footer: () => (
                 <>
-                    <button className="modal-btn btn-secondary" onClick={onClose}>
-                        Cancel
-                    </button>
-                    <button className="modal-btn btn-danger" onClick={onConfirm}>
-                        Delete
-                    </button>
+                    <button className="modal-btn btn-secondary" onClick={onClose}>Cancel</button>
+                    <button className="modal-btn btn-danger" onClick={onConfirm}>Delete</button>
                 </>
-            );
-        }
-        if (type === 'logout') {
-            return (
+            ),
+        },
+        logout: {
+            header: 'Confirm Logout',
+            body: () => <p>Are you sure you want to log out?</p>,
+            footer: () => (
                 <>
-                    <button className="modal-btn btn-secondary" onClick={onClose}>
-                        Cancel
-                    </button>
-                    <button className="modal-btn btn-danger" onClick={onConfirm}>
-                        Log Out
-                    </button>
+                    <button className="modal-btn btn-secondary" onClick={onClose}>Cancel</button>
+                    <button className="modal-btn btn-danger" onClick={onConfirm}>Log Out</button>
                 </>
-            );
-        }
-        return null;
+            ),
+        },
     };
 
     if (!show) return null;
+
+    const config = modalConfig[type];
 
     return (
         <div className="custom-modal-overlay">
             <div className="custom-modal-backdrop" onClick={onClose} />
             <div className={`custom-modal-container generic-modal ${type}`}>
                 <div className={`modal-header ${type}`}>
-                    <h3 className="modal-title">{renderHeader()}</h3>
-                    <button className="modal-close-btn" onClick={onClose}>
-                        ×
-                    </button>
+                    <h3 className="modal-title">{config?.header}</h3>
+                    <button className="modal-close-btn" onClick={onClose}>×</button>
                 </div>
-
                 <div className="modal-body">
-                    {renderBody()}
+                    {config?.body?.()}
                 </div>
-
-                {type !== 'new' && (
+                {type !== 'new' && config?.footer && (
                     <div className="modal-footer">
-                        {renderFooter()}
+                        {config.footer()}
                     </div>
                 )}
             </div>

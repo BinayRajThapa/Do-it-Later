@@ -234,6 +234,36 @@ const App = () => {
     toast.success("New task added!");
   };
 
+  const modalConfig = {
+    delete: {
+      show: showDeleteConfirm,
+      onClose: () => setShowDeleteConfirm(false),
+      onConfirm: confirmDelete,
+    },
+    edit: {
+      show: showEditConfirm,
+      onClose: () => setShowEditConfirm(false),
+      onConfirm: confirmEdit,
+      taskIndex: taskToEdit,
+      editedTask,
+      setEditedTask,
+    },
+    new: {
+      show: showNewTaskModal,
+      onClose: () => setShowNewTaskModal(false),
+      onSubmitNewTask: handleAddNewTask,
+    },
+    bulkDelete: {
+      show: showBulkDeleteConfirm,
+      onClose: () => setShowBulkDeleteConfirm(false),
+      onConfirm: () => {
+        deleteSelectedTasks();
+        setShowBulkDeleteConfirm(false);
+      },
+    },
+  };
+
+
   return (
     <div className="app">
       <Toaster position="top-center" reverseOrder={false} />
@@ -294,27 +324,9 @@ const App = () => {
               </main>
 
               {/* Modals */}
-              <Modals
-                type="delete"
-                show={showDeleteConfirm}
-                onClose={() => setShowDeleteConfirm(false)}
-                onConfirm={confirmDelete}
-              />
-              <Modals
-                type="edit"
-                show={showEditConfirm}
-                onClose={() => setShowEditConfirm(false)}
-                onConfirm={confirmEdit}
-                taskIndex={taskToEdit}
-                editedTask={editedTask}
-                setEditedTask={setEditedTask}
-              />
-              <Modals
-                type="new"
-                show={showNewTaskModal}
-                onClose={() => setShowNewTaskModal(false)}
-                onSubmitNewTask={handleAddNewTask}
-              />
+              {Object.entries(modalConfig).map(([type, props]) =>
+                props.show ? <Modals key={type} type={type} {...props} /> : null
+              )}
 
               {selectedTasks.length > 0 && (
                 <>
@@ -337,6 +349,7 @@ const App = () => {
                   </div>
                 </>
               )}
+
 
             </>
           ) : (
