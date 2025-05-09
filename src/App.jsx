@@ -153,10 +153,13 @@ const App = () => {
     if (taskIndex === -1) return toast.error("Task not found!");
 
     setTaskToEdit(taskIndex);
-    setOriginalText(tasks[taskIndex].task);
-    setEditedText(tasks[taskIndex].task);
+
+    setEditedTask({ 
+        ...tasks[taskIndex] 
+    });
+
     setShowEditConfirm(true);
-  }, [tasks]);
+  }, [tasks, setEditedTask]); 
 
   const confirmEdit = () => {
     const updatedTasks = [...tasks];
@@ -227,12 +230,13 @@ const App = () => {
   const handleAddNewTask = async (newTaskData) => {
     const updatedTasks = [...tasks, {
       id: Date.now(),
-      ...newTaskData,
+      ...newTaskData, 
       status: 'todo'
     }];
     dispatch(updateTasks(updatedTasks));
     toast.success("New task added!");
   };
+  
 
   const modalConfig = {
     delete: {
@@ -244,7 +248,7 @@ const App = () => {
       show: showEditConfirm,
       onClose: () => setShowEditConfirm(false),
       onConfirm: confirmEdit,
-      taskIndex: taskToEdit,
+      task: taskToEdit !== null ? tasks[taskToEdit] : null, 
       editedTask,
       setEditedTask,
     },

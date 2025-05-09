@@ -51,6 +51,7 @@ const TaskColumn = ({
             title={task.title}
             description={task.description}
             priority={task.priority}
+            dueDate={task.dueDate}
             tags={task.tags}
             setActiveCard={setActiveCard}
             onDelete={() => onDelete(task.id)}

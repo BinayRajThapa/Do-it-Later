@@ -1,5 +1,5 @@
 import React from "react";
-import { FiEdit2, FiTrash2 } from "react-icons/fi";
+import { FiEdit2 } from "react-icons/fi";
 import "./TaskCard.scss";
 
 // Priority color mapping
@@ -14,6 +14,7 @@ const TaskCard = ({
   title,
   description,
   priority,
+  dueDate,
   tags,
   setActiveCard,
   onDelete,
@@ -21,7 +22,6 @@ const TaskCard = ({
   isSelected,
   onToggleSelect
 }) => {
-
   const handleDragStart = (e) => {
     e.dataTransfer.setData("taskId", id);
     setActiveCard(id);
@@ -31,6 +31,16 @@ const TaskCard = ({
   const handleDragEnd = (e) => {
     e.currentTarget.classList.remove("dragging");
     setActiveCard(null);
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    if (isNaN(date)) return null;
+    return date.toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
   };
 
   return (
@@ -51,18 +61,20 @@ const TaskCard = ({
         <div className="task_content">
           <p className="task_text">{title}</p>
           {description && <p className="task_description">{description}</p>}
+          {dueDate && (
+            <p className="task_due_date">Due: {formatDate(dueDate)}</p>
+          )}
         </div>
       </div>
 
       <div className="task_card_bottom_line">
         {priority && (
-         <span
+          <span
             className="priority-badge"
             data-priority={priority}
           >
             {priority.charAt(0).toUpperCase() + priority.slice(1)}
           </span>
-       
         )}
 
         <div className="task_actions">
