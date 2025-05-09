@@ -136,6 +136,35 @@
   @include transition-all;
 }
 
+.password-group {
+  position: relative;
+
+  .password-input-wrapper {
+    position: relative;
+
+    input {
+      padding-right: 40px; // Space for the icon
+    }
+
+    .toggle-password-icon {
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      transform: translateY(-50%);
+      font-size: 18px;
+      cursor: pointer;
+      color: #aaa;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: $primary-color;
+      }
+    }
+  }
+}
+
+
+
 @media (max-width: 480px) {
   .auth-card {
     padding: 20px;
